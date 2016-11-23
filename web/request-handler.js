@@ -4,5 +4,10 @@ var archive = require('../helpers/archive-helpers');
 var httpHelper = require('./http-helpers');
 
 exports.handleRequest = function (req, res) {
-  res.end(archive.paths.list);
+  var action = httpHelper.actionMap[req.method];
+  if (action) {
+    action(req, res);
+  } else {
+    httpHelper.serveAssets(res, '', 404);
+  }
 };
