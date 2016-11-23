@@ -33,7 +33,7 @@ exports.collectData = function(request, callback) {
     data += chunk;
   });
   request.on('end', function() {
-    callback(JSON.parse(data));
+    callback(data.slice(4));
   });
 
 };
@@ -75,14 +75,14 @@ exports.actionMap = {
 
     if (pathname === '/') {
       exports.collectData(req, function(parsedData) {
-        site = parsedData.url;
+        site = parsedData;
         archive.isUrlInList(url, function(urlIsInList) {
           
           if (urlIsInList) {
             archive.isUrlArchived(site, function(urlIsArchived) {
               
               if (urlIsArchived) {
-                var filePath = archive.paths.archivedSites + '/' + pathname;
+                var filePath = archive.paths.archivedSites + '/' + site;
                 exports.sendFile(filePath, res, 302);
               
               } else { // url is not in the archive
@@ -92,8 +92,9 @@ exports.actionMap = {
             });
           
           } else { //url is not in list
-            // send loading.html
-            // add url to list
+            var filePath = '/Users/student/hrsf51-web-historian/web/public/loading.html';
+            exports.sendFile(filePath, res, 302);
+            archive.addUrlToList(site, function () {} );
           }
         });
       });
