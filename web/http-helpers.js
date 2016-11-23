@@ -56,6 +56,9 @@ exports.actionMap = {
     if (pathname === '/') {
       var filePath = '/Users/student/hrsf51-web-historian/web/public/index.html';
       exports.sendFile(filePath, res, 200);
+    } else if (pathname === '/styles.css') {
+      var filePath = '/Users/student/hrsf51-web-historian/web/public/styles.css';
+      exports.sendFile(filePath, res, 200);
     } else {
       var filePath = archive.paths.archivedSites + '/' + pathname;
       archive.isUrlArchived(pathname, function(isArchived) {
@@ -76,7 +79,7 @@ exports.actionMap = {
     if (pathname === '/') {
       exports.collectData(req, function(parsedData) {
         site = parsedData;
-        archive.isUrlInList(url, function(urlIsInList) {
+        archive.isUrlInList(site, function(urlIsInList) {
           
           if (urlIsInList) {
             archive.isUrlArchived(site, function(urlIsArchived) {
@@ -99,6 +102,15 @@ exports.actionMap = {
         });
       });
     }
+    var filePath = archive.paths.list;
+    fs.readFile(filePath, function(err, content) {
+      if (err) {
+        console.log(err);
+      } else {
+        content = content.toString().split('\n');
+        archive.downloadUrls(content);
+      }
+    });
 
   },
   
